@@ -81,6 +81,18 @@ and writes the same local data store.
 
 ---
 
+## Screenshots
+
+| Dashboard | Pipeline Engine |
+| --- | --- |
+| ![Dashboard](docs/screenshots/dashboard.jpg) | ![Pipeline](docs/screenshots/pipeline-engine.jpg) |
+| **Agents & Tools** | **Analyst & What-If** |
+| ![Agents](docs/screenshots/agents-hub.jpg) | ![Analyst](docs/screenshots/analyst-whatif.jpg) |
+| **Interface Builder** | |
+| ![Builder](docs/screenshots/interface-builder.jpg) | |
+
+---
+
 ## Why it is different
 
 1. **Zero context fragmentation** — the agent sees what the pipeline just
@@ -208,6 +220,12 @@ nexus-os/
 │   ├── capabilities/           # Tauri v2 capability manifest
 │   └── tauri.conf.json
 ├── scripts/gen_icons.py        # stdlib-only icon generator
+├── docs/
+│   ├── gifs/                   # module demo GIFs
+│   └── screenshots/            # static screenshots
+├── .github/workflows/ci.yml    # CI: TS build + cargo fmt/check
+├── CHANGELOG.md                # release history (Keep a Changelog)
+├── CONTRIBUTING.md             # setup, checks and PR guidelines
 └── README.md
 ```
 
@@ -253,6 +271,17 @@ strict build, zero console errors):
 - [ ] Document extraction pipeline on the Rust side (OCR + field rules engine).
 - [ ] CI packaging matrix (.AppImage / .deb / .msi / .dmg) and code signing.
 - [ ] Screen package signing so shared configurations can be trusted.
+
+---
+
+## Documentation
+
+- [`CHANGELOG.md`](CHANGELOG.md) — release history.
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — setup, checks and pull request guidelines.
+- [`docs/gifs/`](docs/gifs/) — animated module demos.
+- [`docs/screenshots/`](docs/screenshots/) — static screenshots.
+- CI: [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs the TypeScript
+  build plus `cargo fmt --check` and `cargo check` on every push and PR.
 
 ---
 
