@@ -1,5 +1,11 @@
 # NEXUS OS — Operational Studio
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Tauri 2](https://img.shields.io/badge/Tauri-2-orange.svg)](https://tauri.app)
+[![React 19](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev)
+[![Rust](https://img.shields.io/badge/Rust-backend-brightgreen.svg)](https://www.rust-lang.org)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/JCmamoa/NEXUS-AI)
+
 **A local-first, cross-platform operational command center for businesses.**
 One lightweight desktop app (Linux / Windows / macOS) that connects to your
 databases, parses documents, runs supervised autonomous agents, answers plain
@@ -41,6 +47,8 @@ and writes the same local data store.
 - Writes clean records directly to the connected database; anything unreadable
   or with a value discrepancy is routed to a **Pending Approval** queue.
 
+![Pipeline Engine](docs/gifs/pipeline-engine.gif)
+
 ### B · Agent & Internal Tools Hub
 - Create specialized agents (e.g. *Order Triage Agent*, *Tier-1 Support Agent*)
   and choose which internal tools each one may call.
@@ -48,6 +56,8 @@ and writes the same local data store.
 - **Autonomous Mode**: the agent executes on its own **within guardrails**
   (e.g. refunds up to US$ 20) and is blocked otherwise.
 - Every outcome is appended to a local, read-only **audit trail**.
+
+![Agents Hub — copilot approval, guardrail block and audit trail](docs/gifs/agents.gif)
 
 ### C · Conversational Analyst & What-If Simulator
 - Ask *"Compare net margin by category over the last 6 months"* — the app
@@ -57,6 +67,8 @@ and writes the same local data store.
 - **What-if sliders** (average price, conversion rate, traffic, shipping cost,
   ad spend) recompute a 6-month profit / cash-flow projection **in real time**.
 
+![Analyst & What-If](docs/gifs/analyst-whatif.gif)
+
 ### D · Rapid Interface Builder
 - Drag & drop pre-built blocks (form, editable table, action button, metric
   card) over a 3-column canvas to assemble a dedicated operational screen —
@@ -64,6 +76,8 @@ and writes the same local data store.
 - **Save**, **load**, **export** the screen as a shareable configuration
   package (`nexus-os/screen-package` JSON) and **import** it on any other
   machine running NEXUS OS.
+
+![Interface Builder](docs/gifs/builder.gif)
 
 ---
 
