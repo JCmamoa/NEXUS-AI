@@ -1,6 +1,8 @@
 # NEXUS OS — Operational Studio
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/JCmamoa/NEXUS-AI/actions/workflows/ci.yml/badge.svg)](https://github.com/JCmamoa/NEXUS-AI/actions/workflows/ci.yml)
+[![Recruiter Stress](https://github.com/JCmamoa/NEXUS-AI/actions/workflows/recruiter.yml/badge.svg)](https://github.com/JCmamoa/NEXUS-AI/actions/workflows/recruiter.yml)
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-orange.svg)](https://tauri.app)
 [![React 19](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev)
 [![Rust](https://img.shields.io/badge/Rust-backend-brightgreen.svg)](https://www.rust-lang.org)
