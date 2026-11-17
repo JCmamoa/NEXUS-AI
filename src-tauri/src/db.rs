@@ -225,7 +225,7 @@ fn seed(conn: &mut Connection) -> Result<(), String> {
                 new_id(),
                 agent_id,
                 agent_name,
-                r#"{"order":"#A-4821","carrier":"express"}"#,
+                r##"{"order":"#A-4821","carrier":"express"}"##,
                 "Label created: 1Z999AA10123456784",
                 now()
             ],

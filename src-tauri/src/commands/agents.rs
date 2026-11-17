@@ -40,10 +40,12 @@ pub fn agents_list(state: State<AppState>) -> Result<Vec<Agent>, String> {
             "SELECT {AGENT_COLS} FROM agents ORDER BY created_at"
         ))
         .map_err(|e| e.to_string())?;
-    stmt.query_map([], map_agent)
+    let agents = stmt
+        .query_map([], map_agent)
         .map_err(|e| e.to_string())?
         .collect::<Result<Vec<_>, _>>()
-        .map_err(|e| e.to_string())
+        .map_err(|e| e.to_string())?;
+    Ok(agents)
 }
 
 #[tauri::command]
@@ -190,8 +192,10 @@ pub fn agents_audit(state: State<AppState>) -> Result<Vec<AuditEntry>, String> {
             "SELECT {AUDIT_COLS} FROM audit_log ORDER BY created_at DESC"
         ))
         .map_err(|e| e.to_string())?;
-    stmt.query_map([], map_audit)
+    let entries = stmt
+        .query_map([], map_audit)
         .map_err(|e| e.to_string())?
         .collect::<Result<Vec<_>, _>>()
-        .map_err(|e| e.to_string())
+        .map_err(|e| e.to_string())?;
+    Ok(entries)
 }

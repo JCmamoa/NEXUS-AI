@@ -23,10 +23,12 @@ pub fn builder_list_screens(state: State<AppState>) -> Result<Vec<Screen>, Strin
             "SELECT {SCREEN_COLS} FROM screens ORDER BY created_at DESC"
         ))
         .map_err(|e| e.to_string())?;
-    stmt.query_map([], map_screen)
+    let screens = stmt
+        .query_map([], map_screen)
         .map_err(|e| e.to_string())?
         .collect::<Result<Vec<_>, _>>()
-        .map_err(|e| e.to_string())
+        .map_err(|e| e.to_string())?;
+    Ok(screens)
 }
 
 #[tauri::command]
