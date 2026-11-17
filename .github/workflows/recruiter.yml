@@ -22,9 +22,6 @@ permissions:
   contents: read
   packages: write
 
-env:
-  IMAGE_NAME: ghcr.io/${{ github.repository }}
-
 jobs:
   docker-stress:
     name: Docker demo + automated stress test
@@ -32,6 +29,9 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+
+      - name: Compute image name (GHCR requires lowercase)
+        run: echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
 
       - name: Build Docker image
         run: docker build -t nexus-os:ci .
