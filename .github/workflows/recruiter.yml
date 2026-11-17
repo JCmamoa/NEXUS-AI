@@ -1,0 +1,157 @@
+name: Recruiter Demo & Stress Test
+
+# One-click evaluation: builds the Docker image, runs the app, drives every
+# module through an automated stress test and publishes installable packages.
+on:
+  workflow_dispatch:
+    inputs:
+      iterations:
+        description: "Number of full UI cycles (each cycle exercises all 4 modules)"
+        required: false
+        default: "3"
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "scripts/stress.mjs"
+      - "Dockerfile"
+      - "deploy/**"
+      - ".github/workflows/recruiter.yml"
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
+
+jobs:
+  docker-stress:
+    name: Docker demo + automated stress test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t nexus-os:ci .
+
+      - name: Start container
+        run: |
+          docker run -d --name nexus-os -p 8080:80 nexus-os:ci
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8080/ > /dev/null; then
+              echo "Container is healthy after ${i}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Container failed to start"
+          docker logs nexus-os
+          exit 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run stress test against the container
+        env:
+          ITERATIONS: ${{ inputs.iterations || '3' }}
+        run: |
+          mkdir -p stress-artifacts
+          node scripts/stress.mjs http://localhost:8080 "$ITERATIONS" | tee stress-artifacts/console.log
+
+      - name: Container logs
+        if: always()
+        run: docker logs nexus-os > stress-artifacts/container.log 2>&1 || true
+
+      - name: Publish stress report to job summary
+        if: always()
+        run: |
+          {
+            echo "## NEXUS OS — stress test summary"
+            echo ""
+            if [ -f stress-artifacts/stress-report.json ]; then
+              node -e '
+                const r = require("./stress-artifacts/stress-report.json");
+                const s = r.summary;
+                console.log(`| Metric | Value |`);
+                console.log(`| --- | --- |`);
+                console.log(`| Result | **${s.ok ? "PASS ✅" : "FAIL ❌"}** |`);
+                console.log(`| Steps | ${s.stepsPassed}/${s.stepsTotal} |`);
+                console.log(`| Cycles | ${s.iterations} |`);
+                console.log(`| Duration | ${(s.durationMs / 1000).toFixed(1)} s |`);
+                console.log(`| Console errors | ${s.consoleErrors} |`);
+                console.log(`| Page errors | ${s.pageErrors} |`);
+                console.log(`| JS heap (end) | ${s.heapUsedMBAtEnd ?? "n/a"} MB |`);
+              '
+            else
+              echo "Stress report was not produced."
+            fi
+            echo ""
+            echo "**Run it yourself:** \`docker run --rm -p 8080:80 ${IMAGE_NAME}:latest\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload stress artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stress-artifacts
+          path: stress-artifacts
+          retention-days: 30
+
+      - name: Publish container image to GHCR
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker tag nexus-os:ci "${IMAGE_NAME}:latest"
+          docker tag nexus-os:ci "${IMAGE_NAME}:${GITHUB_SHA::7}"
+          docker push "${IMAGE_NAME}:latest"
+          docker push "${IMAGE_NAME}:${GITHUB_SHA::7}"
+
+  packages:
+    name: Native installers (.deb / .AppImage)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libwebkit2gtk-4.1-dev \
+            build-essential libssl-dev libgtk-3-dev \
+            libayatana-appindicator3-dev librsvg2-dev
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build native packages
+        run: npm run tauri build
+
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-os-installers
+          path: |
+            src-tauri/target/release/bundle/deb/**
+            src-tauri/target/release/bundle/appimage/**
+          retention-days: 30

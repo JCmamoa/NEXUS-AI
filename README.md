@@ -190,6 +190,52 @@ The SQLite database is created on first launch at the OS app-data directory
 (e.g. `~/.local/share/com.nexusos.studio/nexus.db`) and seeded with a demo
 data set so every module is alive immediately.
 
+### 3. Docker demo (zero install)
+
+The browser demo — same UI, same 17-command IPC contract, in-memory backend —
+can be served from a container:
+
+```bash
+docker compose up --build      # http://localhost:8080
+# or
+docker run --rm -p 8080:80 ghcr.io/jcmamoa/nexus-ai:latest
+```
+
+The image is a two-stage build (Node → nginx, ~60 MB) and exposes a
+healthcheck at `/`.
+
+---
+
+## Recruiter / evaluation mode
+
+A dedicated GitHub Actions workflow — **Recruiter Demo & Stress Test** — lets
+anyone evaluate the project in one click:
+
+1. **Actions → Recruiter Demo & Stress Test → Run workflow** (choose how many
+   full UI cycles to run, default `3`).
+2. The workflow builds the Docker image, starts it, and an automated
+   Playwright suite (`scripts/stress.mjs`) drives **every module end-to-end**
+   against the running container:
+   - Pipeline: file arrival, unreadable scan → approval queue, human approval.
+   - Agents: copilot suggestion → approve; autonomous `$75` → **blocked** by
+     the `$20` guardrail; autonomous `$5` → executed.
+   - Analyst: natural-language question → chart, bar/line toggle, what-if
+     slider recalculation, generated read-only SQL.
+   - Builder: palette → canvas, rename, save, export package.
+3. It measures step timings, console/page errors and JS heap usage, then
+   publishes a **summary table** in the job page and uploads screenshots +
+   `stress-report.json` as artifacts.
+4. A second job builds the **native installers** (`.deb` / `.AppImage`) and
+   uploads them as downloadable artifacts.
+
+Run the same stress test locally:
+
+```bash
+npm install -D playwright && npx playwright install chromium
+npm run preview &                       # or: docker compose up -d
+npm run stress http://localhost:4173 3  # baseUrl, iterations
+```
+
 ---
 
 ## Project structure
@@ -223,7 +269,13 @@ nexus-os/
 ├── docs/
 │   ├── gifs/                   # module demo GIFs
 │   └── screenshots/            # static screenshots
-├── .github/workflows/ci.yml    # CI: TS build + cargo fmt/check
+├── deploy/nginx.conf           # static hosting for the Docker demo
+├── scripts/stress.mjs          # Playwright stress test (all 4 modules)
+├── Dockerfile                  # Node build → nginx demo image
+├── docker-compose.yml          # one-command local demo
+├── .github/workflows/
+│   ├── ci.yml                  # TS build + cargo fmt/check
+│   └── recruiter.yml           # Docker demo, stress test, installers
 ├── CHANGELOG.md                # release history (Keep a Changelog)
 ├── CONTRIBUTING.md             # setup, checks and PR guidelines
 └── README.md

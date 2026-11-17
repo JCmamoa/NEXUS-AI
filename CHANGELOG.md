@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Docker demo** — two-stage build (Node → nginx, ~60 MB) serving the
+  browser demo with the same 17-command IPC contract, plus
+  `docker-compose.yml` for a one-command launch on port 8080.
+- **Automated stress test** (`scripts/stress.mjs`, Playwright) that drives
+  every module end-to-end — pipeline ingestion and approvals, copilot approval,
+  autonomous guardrail block, NL→SQL chart, what-if sliders, builder save and
+  export — while measuring step timings, console errors and JS heap usage.
+- **Recruiter Demo & Stress Test** GitHub Actions workflow
+  (`workflow_dispatch`): builds and publishes the Docker image to GHCR, runs
+  the stress suite against the container, publishes a summary table and
+  artifacts, and builds the native `.deb` / `.AppImage` installers.
+
 ### Planned
 - Real folder watcher daemon (`notify` + `tauri-plugin-fs`) with native
   notifications for pending approvals.

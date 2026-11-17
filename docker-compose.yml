@@ -1,0 +1,8 @@
+services:
+  nexus-os:
+    build: .
+    image: nexus-os:demo
+    container_name: nexus-os-demo
+    ports:
+      - "8080:80"
+    restart: unless-stopped

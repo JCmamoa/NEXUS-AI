@@ -4,3 +4,7 @@ src-tauri/target
 src-tauri/gen
 *.local
 .DS_Store
+
+stress-artifacts
+test-results
+playwright-report
