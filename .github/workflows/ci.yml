@@ -21,6 +21,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      # Visibility only: surfaces high/critical advisories (e.g. picomatch
+      # GHSA-fc5q-39xc-vjpf, dev-only) without blocking the build while no
+      # patched upstream release exists.
+      - name: Dependency audit (non-blocking)
+        run: npm audit --audit-level=high
+        continue-on-error: true
       - name: Upload production bundle
         uses: actions/upload-artifact@v4
         with:
