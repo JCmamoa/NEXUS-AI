@@ -1,0 +1,48 @@
+# Dependabot version updates.
+#
+# Security advisories are surfaced separately: Dependabot alerts cover the
+# repository, and the non-blocking `npm audit` step in CI prints any
+# high/critical advisory on every run. This file keeps dependencies current so
+# transitive issues (e.g. picomatch GHSA-fc5q-39xc-vjpf via Vite) get picked up
+# automatically once an upstream fix ships.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+    labels:
+      - dependencies
+    groups:
+      frontend-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: cargo
+    directory: "/src-tauri"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps-rust)"
+    labels:
+      - dependencies
+      - rust
+    groups:
+      rust-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
